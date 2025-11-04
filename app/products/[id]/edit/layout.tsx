@@ -1,4 +1,3 @@
-import ProductDetailClient from './ProductDetailClient';
 import { fetchProducts } from '@/lib/api';
 
 export async function generateStaticParams() {
@@ -13,6 +12,11 @@ export async function generateStaticParams() {
   }
 }
 
-export default function ProductDetailPage() {
-  return <ProductDetailClient />;
+export default function EditProductLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <>{children}</>;
 }
+

@@ -1,6 +1,7 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -21,27 +22,73 @@ const productSchema = z.object({
 
 type ProductFormData = z.infer<typeof productSchema>;
 
-export default function CreateProductPage() {
+export default function EditProductClient() {
+  const params = useParams();
   const router = useRouter();
-  const { addProduct } = useProductsStore();
+  const { products, updateProduct, loadProducts, isLoading } = useProductsStore();
+  const productId = typeof params.id === 'string' ? parseInt(params.id, 10) : NaN;
+  const product = !isNaN(productId) ? products.find((p) => p.id === productId) : undefined;
+
+  useEffect(() => {
+    if (products.length === 0 && !isLoading) {
+      loadProducts();
+    }
+  }, [products.length, isLoading, loadProducts]);
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    reset,
   } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
-    defaultValues: {
-      discountPercentage: 0,
-      rating: 0,
-      stock: 0,
-    },
   });
 
+  useEffect(() => {
+    if (product) {
+      reset({
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        discountPercentage: product.discountPercentage,
+        rating: product.rating,
+        stock: product.stock,
+        brand: product.brand,
+        category: product.category,
+        thumbnail: product.thumbnail,
+        images: product.images.join(', '),
+      });
+    }
+  }, [product, reset]);
+
+  if (isLoading || (products.length === 0 && !product)) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-lg text-gray-600">Загрузка продукта...</div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Продукт не найден</h2>
+          <button
+            onClick={() => router.push('/products')}
+            className="text-blue-600 hover:text-blue-800 underline"
+          >
+            Вернуться к списку продуктов
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const onSubmit = (data: ProductFormData) => {
-    const images = data.images ? data.images.split(',').map(img => img.trim()).filter(img => img) : [];
+    const images = data.images ? data.images.split(',').map((img: string) => img.trim()).filter((img: string) => img) : [];
     
-    addProduct({
+    updateProduct(productId, {
       title: data.title,
       description: data.description,
       price: data.price,
@@ -54,13 +101,13 @@ export default function CreateProductPage() {
       images: images.length > 0 ? images : [data.thumbnail],
     });
 
-    router.push('/products');
+    router.push(`/products/${productId}`);
   };
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4 max-w-2xl">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Создать новый продукт</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">Редактировать продукт</h1>
         
         <form onSubmit={handleSubmit(onSubmit)} className="bg-white rounded-lg shadow-md p-6 space-y-6">
           <div>
@@ -240,11 +287,11 @@ export default function CreateProductPage() {
               disabled={isSubmitting}
               className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? 'Создание...' : 'Создать продукт'}
+              {isSubmitting ? 'Сохранение...' : 'Сохранить изменения'}
             </button>
             <button
               type="button"
-              onClick={() => router.push('/products')}
+              onClick={() => router.push(`/products/${productId}`)}
               className="px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors"
             >
               Отмена
