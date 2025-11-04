@@ -34,7 +34,7 @@ export default function ProductDetailClient() {
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Продукт не найден</h2>
           <Link
-            href="/products"
+            href="/"
             className="text-blue-600 hover:text-blue-800 underline"
           >
             Вернуться к списку продуктов
@@ -55,7 +55,7 @@ export default function ProductDetailClient() {
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="flex items-center justify-between mb-6">
           <Link
-            href="/products"
+            href="/"
             className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"
           >
             <MdArrowBack className="w-5 h-5" />

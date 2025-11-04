@@ -54,7 +54,7 @@ export default function CreateProductPage() {
       images: images.length > 0 ? images : [data.thumbnail],
     });
 
-    router.push('/products');
+    router.push('/');
   };
 
   return (
@@ -244,7 +244,7 @@ export default function CreateProductPage() {
             </button>
             <button
               type="button"
-              onClick={() => router.push('/products')}
+              onClick={() => router.push('/')}
               className="px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors"
             >
               Отмена

@@ -75,7 +75,7 @@ export default function EditProductClient() {
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Продукт не найден</h2>
           <button
-            onClick={() => router.push('/products')}
+            onClick={() => router.push('/')}
             className="text-blue-600 hover:text-blue-800 underline"
           >
             Вернуться к списку продуктов
